@@ -6,7 +6,7 @@ Have ```pygame``` installed:</br>
 ```
 pip install pygame
 ```
-Terminal:
+Play:
 ```
 python fly.py
 ```
