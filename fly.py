@@ -89,7 +89,7 @@ bg_surface = pygame.image.load("assets/images/background-day.png").convert()
 bg_surface = pygame.transform.scale(bg_surface, CANVAS_SIZE)  
 
 floor_surface = pygame.image.load("assets/images/base.png").convert()
-floor_surface = pygame.transform.scale(floor_surface, (SCREEN_WIDTH, 118))  
+floor_surface = pygame.transform.scale(floor_surface, (SCREEN_WIDTH, 120))  
 floor_x_pos = 0
 
 bird_down = pygame.transform.scale(pygame.image.load("assets/images/bluebird-downflap.png").convert_alpha(), (50, 35))
