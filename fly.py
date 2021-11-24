@@ -1,5 +1,7 @@
 import pygame, sys, random
 
+from pygame.constants import SRCCOLORKEY
+
 SCREEN_WIDTH = 442
 SCREEN_HEIGHT = 750
 CANVAS_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)  # SCREEN_width, SCREEN_height
@@ -30,9 +32,14 @@ def move_pipes(pipes):
 def check_collision(pipes):
     for pipe in pipes:
         if bird_rect.colliderect(pipe):
+            hit_sound.play()
+            death_sound.play()
             return True
     if bird_rect.top <= -100 or bird_rect.bottom >= SCREEN_HEIGHT-120:  # go beyond top or touch floor
+        hit_sound.play()
+        death_sound.play()
         return True
+
     return False
 
 def rotate_bird(bird):
@@ -69,14 +76,14 @@ def add_score(score, pipes):
 pygame.init()
 screen = pygame.display.set_mode(CANVAS_SIZE)
 clock = pygame.time.Clock()
-game_font = pygame.font.Font('assets/04B_19.ttf',40) # (style,size)
+game_font = pygame.font.Font('assets/04B_19.ttf', 30) # (style,size)
 
 # game variables
-GRAVITY = 0.25
-JUMP_SCREEN_HEIGHT = 8
+GRAVITY = 0.2
+JUMP_SCREEN_HEIGHT = 6
 game_active = True
 bird_movement = 0
-int_score = new_score = highest_score = 0
+int_score = old_score = new_score = highest_score = 0
 
 bg_surface = pygame.image.load("assets/images/background-day.png").convert()
 bg_surface = pygame.transform.scale(bg_surface, CANVAS_SIZE)  
@@ -84,10 +91,6 @@ bg_surface = pygame.transform.scale(bg_surface, CANVAS_SIZE)
 floor_surface = pygame.image.load("assets/images/base.png").convert()
 floor_surface = pygame.transform.scale(floor_surface, (SCREEN_WIDTH, 118))  
 floor_x_pos = 0
-
-# bird_surface = pygame.image.load("assets/images/bluebird-midflap.png").convert_alpha()
-# bird_surface = pygame.transform.scale(bird_surface, (50, 35))  
-# bird_rect = bird_surface.get_rect(center=(60,SCREEN_HEIGHT/2))
 
 bird_down = pygame.transform.scale(pygame.image.load("assets/images/bluebird-downflap.png").convert_alpha(), (50, 35))
 bird_mid = pygame.transform.scale(pygame.image.load("assets/images/bluebird-midflap.png").convert_alpha(), (50, 35))
@@ -107,6 +110,17 @@ SPAWNPIPE = pygame.USEREVENT
 pygame.time.set_timer(SPAWNPIPE, 1200)  # trigger time, 1200ms
 pipe_height = [300, 400, 500]
 
+game_over_surface = pygame.transform.scale(pygame.image.load("assets/images/message.png").convert_alpha(), (220, 319)) # w/h = 0.689
+game_over_rect = game_over_surface.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2-50))
+
+flap_sound = pygame.mixer.Sound("assets/audio/wing.ogg")
+death_sound = pygame.mixer.Sound("assets/audio/die.ogg")
+hit_sound = pygame.mixer.Sound("assets/audio/hit.ogg")
+point_sound = pygame.mixer.Sound("assets/audio/point.ogg")
+start_sound = pygame.mixer.Sound("assets/audio/swoosh.ogg")
+
+start_sound.play()
+
 # game loop
 while True:
     # event loop
@@ -115,14 +129,20 @@ while True:
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                exit()
             if event.key == pygame.K_SPACE and game_active:
                 bird_movement = 0
                 bird_movement -= JUMP_SCREEN_HEIGHT
+                flap_sound.play()
             if event.key == pygame.K_SPACE and game_active == False:  # restart game
                 game_active = True
+                start_sound.play() 
                 pipe_list.clear()
                 bird_rect.center = (60,SCREEN_HEIGHT/2)
                 bird_movement = 0 
+                old_score = 0
         if event.type == SPAWNPIPE:
             pipe_list.extend(create_pipe())
         if event.type == BIRDFLAP:
@@ -147,11 +167,16 @@ while True:
         pipe_list = move_pipes(pipe_list)
         draw_pipes(pipe_list)
 
+        # score
         new_score = add_score(int_score, pipe_list)
+        if old_score != new_score:
+            point_sound.play()
+            old_score = new_score
         if new_score > highest_score:
             highest_score = new_score
         score_display(highest_score, new_score, "main_game")
     else:
+        screen.blit(game_over_surface, game_over_rect)
         score_display(highest_score, new_score, "game_over")
 
     # floor
