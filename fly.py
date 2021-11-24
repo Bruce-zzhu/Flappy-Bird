@@ -81,7 +81,7 @@ game_font = pygame.font.Font('assets/04B_19.ttf', 30) # (style,size)
 # game variables
 GRAVITY = 0.2
 JUMP_SCREEN_HEIGHT = 6
-game_active = True
+game_active = False
 bird_movement = 0
 int_score = old_score = new_score = highest_score = 0
 
@@ -119,7 +119,6 @@ hit_sound = pygame.mixer.Sound("assets/audio/hit.ogg")
 point_sound = pygame.mixer.Sound("assets/audio/point.ogg")
 start_sound = pygame.mixer.Sound("assets/audio/swoosh.ogg")
 
-start_sound.play()
 
 # game loop
 while True:
