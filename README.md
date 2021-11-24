@@ -1,5 +1,5 @@
 # Flappy-Bird
-A little bird
+A little flappy bird
 
 ## Run the game
 Have ```pygame``` installed:</br>
