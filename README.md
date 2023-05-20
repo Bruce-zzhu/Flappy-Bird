@@ -10,4 +10,5 @@ Play:
 ```
 python fly.py
 ```
-![screenshot](./example_image.png)
+
+<img atl="screenshot" src="https://github.com/Bruce-zzhu/Flappy-Bird/blob/main/example_image.png" width="30%" />
