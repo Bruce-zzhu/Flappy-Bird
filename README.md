@@ -10,3 +10,4 @@ Play:
 ```
 python fly.py
 ```
+![screenshot](./example_image.png)
